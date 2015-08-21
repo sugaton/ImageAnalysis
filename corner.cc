@@ -45,7 +45,8 @@ void extractHessianCorner(ARY2I& img, ARY2D& ary0, ARY2D& ary1)
   }
   //条件を満たす点のうち，周囲にも条件を満たす点が存在するものエッジ成分とする
   //基本条件は上と同様
-#else
+
+#elseif 0
   double thresh1 = mx * 0.6,  thresh2 = mx * 0.05;
   int window = 3;
   bool exist;
@@ -68,6 +69,17 @@ void extractHessianCorner(ARY2I& img, ARY2D& ary0, ARY2D& ary1)
       }
       if (exist)
         tmp[i][j] = 255;
+    }
+  }
+#else
+  double thresh1 = mx * 0.6,  thresh2 = mx * 0.05;
+  for(int i = 0; i < height; i++){
+    for(int j = 0; j < width; j++){
+      tmp[i][j] = 0;
+      if(eig0[i][j] >= thresh1) continue;
+      if(eig0[i][j] + eig1[i][j] >= thresh2 * 3){
+        tmp[i][j] = 255;
+      }
     }
   }
 #endif

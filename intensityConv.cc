@@ -73,13 +73,21 @@ void getVMAX_MIN(PGM& pgm, int *vmax, int *vmin)
     }
   }
 }
+void mulhist(ARY1I& hist, ARY1I& mulh)
+{
+  int sum = 0;
+  for (int j = 0; j < hist.width; ++j){
+    sum += hist.array[j];
+    mulh.array[j] = sum;
+  }
+}
 // prob 2.
 void makeConvTable4(PGM& pgm, int1D table, int size, ARY1I& hist)
 {
   int N = pgm.body.height * pgm.body.width;
   int vmax = 0, vmin = __M;
   getVMAX_MIN(pgm, &vmax, &vmin);
-  for(int i = 0; i < size; i++) table[i] = vmin + hist.array[i] * (vmax - vmin) / N;
+  for(int i = 0; i < size; i++) table[i] = vmin + (double)hist.array[i] * (vmax - vmin) / N;
 }
 /*--------------------- メインプログラム -----------------------------*/
 int main(int argc, char *argv[])
@@ -101,6 +109,7 @@ int main(int argc, char *argv[])
   int asize    = depth+1;
   /*----------------- ヒストグラム用配列確保 -----------------*/
   ARY1I& hist  = createARY1I(asize);
+  ARY1I& mulh  = createARY1I(asize);
 
   PGM& pgm2    = createPGM(height, width); //出力画像用配列確保
   PGM& hstpgm1 = createPGM(256, asize);    //度数を256段階で表示
@@ -120,7 +129,8 @@ int main(int argc, char *argv[])
       makeConvTable3(pgm1, table, asize);
       break;
     case 4:
-      makeConvTable4(pgm1, table, asize, hist);
+      mulhist(hist, mulh);
+      makeConvTable4(pgm1, table, asize, mulh);
       break;
   }
 
